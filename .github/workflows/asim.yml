@@ -30,19 +30,23 @@ jobs:
 
       - name: Set up SSH for Server 1
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.PRIVATE_KEY1 }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 54.178.10.189 >> ~/.ssh/known_hosts
+          if [ $GITHUB_REF = 'refs/heads/main' ]; then
+            mkdir -p ~/.ssh
+            echo "${{ secrets.PRIVATE_KEY1 }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan 54.178.10.189 >> ~/.ssh/known_hosts
+          fi
         env:
           SSH_PRIVATE_KEY_SERVER1: ${{ secrets.PRIVATE_KEY1 }}
 
       - name: Set up SSH for Server 2
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.PRIVATE_KEY2 }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan 18.183.141.76 >> ~/.ssh/known_hosts
+          if [ $GITHUB_REF = 'refs/heads/stage' ]; then
+            mkdir -p ~/.ssh
+            echo "${{ secrets.PRIVATE_KEY2 }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan 18.183.141.76 >> ~/.ssh/known_hosts
+          fi
         env:
           SSH_PRIVATE_KEY_SERVER2: ${{ secrets.PRIVATE_KEY2 }}
 
