@@ -27,23 +27,6 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-    steps:
-      - name: Checkout to the repository
-        uses: actions/checkout@v2
-
-      - name: Set up NodeJS environment
-        uses: actions/setup-node@v2
-
-      - name: Cache node modules
-        id: cache-npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
 
       - name: Set up SSH for Server 1
         run: |
@@ -62,9 +45,6 @@ jobs:
           ssh-keyscan 18.183.141.76 >> ~/.ssh/known_hosts
         env:
           SSH_PRIVATE_KEY_SERVER2: ${{ secrets.PRIVATE_KEY2 }}
-
-      - name: Checkout code
-        uses: actions/checkout@v2
 
       - name: Install Dependencies
         run: npm install --force
