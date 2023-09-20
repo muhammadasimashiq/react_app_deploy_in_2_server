@@ -64,5 +64,5 @@ jobs:
 
           elif [ $GITHUB_REF = 'refs/heads/stage' ]; then
             
-            scp -r ./build/* ubuntu@18.183.141.76:/home/ubuntu/web
+            scp -r ./build/* ubuntu@18.183.141.76:/home/ubuntu/web1
           fi
