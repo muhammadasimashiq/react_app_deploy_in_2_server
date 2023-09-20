@@ -52,17 +52,17 @@ jobs:
 
     - name: Install Dependencies
       run: npm install
-      
+
    - name: Deploy to EC2
         run: |
           # Run any build commands, if needed
           export CI=false
           npm run build
-            if [ $GITHUB_REF = 'refs/heads/devops' ]; then
+            if [ $GITHUB_REF = 'refs/heads/main' ]; then
             
             scp -r ./build/* ubuntu@54.178.10.189:/home/ubuntu/web
 
-          elif [ $GITHUB_REF = 'refs/heads/devops2' ]; then
+          elif [ $GITHUB_REF = 'refs/heads/stage' ]; then
             
             scp -r ./build/* ubuntu@18.183.141.76:/home/ubuntu/web
           fi
