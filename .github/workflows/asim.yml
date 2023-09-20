@@ -1,0 +1,68 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - stage 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to the repository
+        uses: actions/checkout@v2
+      - name: Set up NodeJS environment
+        uses: actions/setup-node@v2
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{
+            hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+    env:
+      SSH_PRIVATE_KEY_SERVER1: ${{ secrets.PRIVATE_KEY1 }}
+      SSH_PRIVATE_KEY_SERVER2: ${{ secrets.PRIVATE_KEY2 }}
+
+    - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRIVATE_KEY1 }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan 54.178.10.189 >> ~/.ssh/known_hosts
+    
+    - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PRIVATE_KEY2 }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan 18.183.141.76 >> ~/.ssh/known_hosts
+
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Install Dependencies
+      run: npm install
+      
+   - name: Deploy to EC2
+        run: |
+          # Run any build commands, if needed
+          export CI=false
+          npm run build
+            if [ $GITHUB_REF = 'refs/heads/devops' ]; then
+            
+            scp -r ./build/* ubuntu@54.178.10.189:/home/ubuntu/web
+
+          elif [ $GITHUB_REF = 'refs/heads/devops2' ]; then
+            
+            scp -r ./build/* ubuntu@18.183.141.76:/home/ubuntu/web
+          fi
